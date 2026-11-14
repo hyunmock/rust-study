@@ -1,0 +1,63 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 2 · 변수, 가변성, 상수, 섀도잉 | Rust 44일 강좌</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll());</script>
+</head><body>
+<header class="hero"><div class="wrap"><span class="badge">🦀 Day 2 / 44 · 1주차: 기초 다지기</span><h1>변수, 가변성, 상수, 섀도잉</h1><p>예상 학습 시간 20~30분</p>
+<div class="progress"><div style="width:5%"></div></div></div></header>
+<main class="wrap">
+<section class="card goal"><h2>오늘의 목표</h2><ul><li><code>let</code>으로 변수를 만들고, 기본이 불변임을 이해한다</li><li><code>mut</code>으로 값을 바꾸는 방법을 익힌다</li><li><code>const</code>와 섀도잉(shadowing)의 차이를 구분한다</li></ul></section>
+<section class="card"><h2>개념 설명</h2>
+<p>Day 1에서 <code>println!</code>으로 글자를 출력해 봤죠? 오늘은 값을 저장하는 <b>변수</b>를 배웁니다. Rust의 변수는 기본적으로 <b>불변(immutable)</b>입니다. 한 번 값을 정하면 바꿀 수 없어서, 버그를 미리 막아 줍니다.</p>
+<pre><code class="language-rust">fn main() {
+    let x = 5;
+    println!("x = {x}");
+    // x = 6; // 에러! 불변 변수에는 다시 대입할 수 없습니다
+}</code></pre>
+<p>값을 바꾸고 싶다면 <code>mut</code>를 붙입니다.</p>
+<pre><code class="language-rust">fn main() {
+    let mut count = 0;
+    count += 1;
+    count += 1;
+    println!("count = {count}");
+}</code></pre>
+<p><b>상수</b>는 <code>const</code>로 선언하며, 항상 불변이고 타입을 반드시 적어야 합니다. 이름은 대문자 스네이크 케이스를 씁니다.</p>
+<pre><code class="language-rust">const MAX_POINTS: u32 = 100_000;
+
+fn main() {
+    println!("최대 점수: {MAX_POINTS}");
+}</code></pre>
+<p><b>섀도잉</b>은 같은 이름으로 <code>let</code>을 다시 써서 새 변수를 만드는 것입니다. <code>mut</code>와 달리 타입도 바꿀 수 있습니다.</p>
+<pre><code class="language-rust">fn main() {
+    let spaces = "   ";        // &amp;str
+    let spaces = spaces.len(); // usize, 타입이 바뀜
+    println!("공백 개수: {spaces}");
+
+    let y = 5;
+    let y = y * 2;
+    {
+        let y = y + 100; // 이 블록 안에서만 유효
+        println!("안쪽 y = {y}");
+    }
+    println!("바깥 y = {y}");
+}</code></pre>
+<p>정리: <code>mut</code>는 같은 변수의 값을 바꾸고, 섀도잉은 새 변수를 만듭니다. <code>mut</code>로는 타입을 바꿀 수 없습니다.</p></section>
+<section class="card exercise"><h2>연습 문제</h2>
+<p><b>1.</b> <code>let mut score = 10;</code>으로 시작해 5를 더하고 2를 곱한 뒤 출력해 보세요.</p>
+<p><b>2.</b> 문자열 <code>"42"</code>를 변수 <code>n</code>에 저장한 뒤, 섀도잉으로 같은 이름 <code>n</code>을 정수로 바꿔 1을 더해 출력해 보세요. (힌트: <code>parse::&lt;i32&gt;().unwrap()</code>)</p>
+<details><summary>힌트</summary><p>1번은 <code>score += 5; score *= 2;</code>. 2번은 <code>let n: i32 = n.parse().unwrap();</code> 형태를 사용합니다.</p></details></section>
+<section class="card solution"><h2>어제 문제 풀이</h2><details><summary>풀이 보기</summary>
+<p>1. 자기소개 출력 예시:</p>
+<pre><code class="language-rust">fn main() {
+    println!("이름: 헨리");
+    println!("취미: 독서");
+    println!("Rust를 배우는 이유: 안전하고 빠른 프로그램을 만들고 싶어서");
+}</code></pre>
+<p>2. 세미콜론을 지우면 <code>expected ';'</code> 같은 메시지와 함께 줄 번호, 수정 제안이 나옵니다. 에러 메시지를 읽는 습관이 Rust 실력의 절반입니다.</p></details></section>
+<section class="card"><h2>내일 예고</h2><p>Day 3에서는 정수, 실수, bool, char, 튜플, 배열 같은 <b>기본 타입</b>을 배웁니다.</p></section>
+<nav class="pager"><a href="day-01.html">← Day 01</a><a href="../index.html">전체 목차</a><a href="day-03.html">Day 03 →</a></nav>
+</main><footer>Rust Study · Day 2</footer></body></html>
