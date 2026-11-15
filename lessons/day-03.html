@@ -1,0 +1,66 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 3 · 기본 타입: 정수, 실수, bool, char, 튜플, 배열 | Rust 44일 강좌</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll());</script>
+</head><body>
+<header class="hero"><div class="wrap"><span class="badge">🦀 Day 3 / 44 · 1주차</span><h1>기본 타입: 정수, 실수, bool, char, 튜플, 배열</h1><p>예상 학습 시간 20~30분</p>
+<div class="progress"><div style="width:7%"></div></div></div></header>
+<main class="wrap">
+<section class="card goal"><h2>오늘의 목표</h2><ul><li>정수와 실수 타입을 구분해서 쓴다</li><li>bool과 char의 특징을 이해한다</li><li>튜플과 배열을 만들고 값을 꺼내 본다</li></ul></section>
+<section class="card"><h2>개념 설명</h2>
+<p>Day 2에서 변수를 배웠죠? 모든 값에는 타입이 있고, Rust는 대부분 알아서 추론하지만 필요하면 직접 적습니다. 정수는 <code>i32</code>(부호 있음), <code>u32</code>(부호 없음), <code>u8</code>, <code>i64</code> 등이 있고 기본값은 <code>i32</code>입니다. 실수는 <code>f64</code>(기본)와 <code>f32</code>입니다.</p>
+<pre><code class="language-rust">fn main() {
+    let a: i32 = -42;
+    let b: u8 = 255;
+    let pi: f64 = 3.14159;
+    let sum = a + 10;
+    let div = 7 / 2;      // 정수 나눗셈: 3
+    let fdiv = 7.0 / 2.0; // 3.5
+    println!("{a} {b} {pi} {sum} {div} {fdiv}");
+}</code></pre>
+<p><code>bool</code>은 <code>true</code>/<code>false</code>, <code>char</code>는 작은따옴표로 쓰는 유니코드 문자 하나(4바이트)입니다. 한글과 이모지도 가능합니다.</p>
+<pre><code class="language-rust">fn main() {
+    let is_ok: bool = true;
+    let letter: char = 'R';
+    let heart = '🦀';
+    let han = '한';
+    println!("{is_ok} {letter} {heart} {han}");
+}</code></pre>
+<p>튜플은 서로 다른 타입을 묶고, 길이가 고정입니다. <code>.0</code>, <code>.1</code>로 접근하거나 구조 분해할 수 있습니다. 배열은 같은 타입을 고정 길이로 담으며 <code>[타입; 개수]</code>로 씁니다.</p>
+<pre><code class="language-rust">fn main() {
+    let person: (&amp;str, i32, f64) = ("헨리", 30, 175.5);
+    println!("{} {}", person.0, person.1);
+    let (name, age, height) = person;
+    println!("{name} {age} {height}");
+
+    let nums = [1, 2, 3, 4, 5];
+    let zeros = [0; 3]; // [0, 0, 0]
+    println!("첫 값: {}, 길이: {}", nums[0], nums.len());
+    println!("{:?} {:?}", nums, zeros);
+}</code></pre>
+<p>배열 범위를 벗어난 인덱스는 실행 중 panic이 납니다. 이것이 Rust의 안전장치입니다.</p></section>
+<section class="card exercise"><h2>연습 문제</h2>
+<p>1. <code>let c: f64 = 100.0;</code>(섭씨)를 화씨로 바꿔(<code>c * 9.0 / 5.0 + 32.0</code>) 출력해 보세요.</p>
+<p>2. 정수 배열 <code>[3, 8, 1, 9, 4]</code>의 첫 번째와 마지막 원소의 합을 출력하고, 이름과 나이를 담은 튜플도 만들어 구조 분해로 출력해 보세요.</p>
+<details><summary>힌트</summary><p>1번은 정수 리터럴 대신 <code>9.0</code>처럼 소수점을 써야 f64끼리 연산됩니다. 2번 마지막 원소는 <code>arr[arr.len() - 1]</code>입니다.</p></details></section>
+<section class="card solution"><h2>어제 문제 풀이</h2><details><summary>풀이 보기</summary>
+<p>1. mut 변수 계산:</p>
+<pre><code class="language-rust">fn main() {
+    let mut score = 10;
+    score += 5;
+    score *= 2;
+    println!("score = {score}"); // 30
+}</code></pre>
+<p>2. 섀도잉으로 타입 바꾸기:</p>
+<pre><code class="language-rust">fn main() {
+    let n = "42";
+    let n: i32 = n.parse().unwrap();
+    println!("{}", n + 1); // 43
+}</code></pre></details></section>
+<section class="card"><h2>내일 예고</h2><p>Day 4에서는 함수를 만들고, Rust의 핵심 개념인 표현식과 구문의 차이를 배웁니다.</p></section>
+<nav class="pager"><a href="day-02.html">← Day 2</a><a href="../index.html">전체 목차</a><a href="day-04.html">Day 4 →</a></nav>
+</main><footer>Rust Study · Day 3</footer></body></html>
