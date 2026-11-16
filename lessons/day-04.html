@@ -1,0 +1,57 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 4 · 함수, 표현식과 구문의 차이 | Rust 44일 강좌</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll());</script>
+</head><body>
+<header class="hero"><div class="wrap"><span class="badge">🦀 Day 4 / 44 · 1주차: 기초 다지기</span><h1>함수, 표현식과 구문의 차이</h1><p>예상 학습 시간 20~30분</p>
+<div class="progress"><div style="width:9%"></div></div></div></header>
+<main class="wrap">
+<section class="card goal"><h2>오늘의 목표</h2><ul><li><code>fn</code>으로 함수를 정의하고 호출한다.</li><li>매개변수와 반환 타입을 쓴다.</li><li>표현식(값을 만듦)과 구문(값을 만들지 않음)의 차이를 이해한다.</li></ul></section>
+<section class="card"><h2>개념 설명</h2>
+<p>어제 배운 타입들은 함수의 매개변수와 반환값에 쓰입니다. Rust 함수 이름은 snake_case로 쓰고, 매개변수 타입은 반드시 적어야 합니다.</p>
+<pre><code class="language-rust">fn add(a: i32, b: i32) -&gt; i32 {
+    a + b // 세미콜론 없음: 이 값이 반환된다
+}
+
+fn greet(name: &amp;str) {
+    println!("안녕, {}!", name);
+}
+
+fn main() {
+    greet("Rust");
+    println!("{}", add(2, 3));
+}</code></pre>
+<p><b>구문(statement)</b>은 동작을 수행하고 값을 반환하지 않습니다(예: <code>let x = 5;</code>). <b>표현식(expression)</b>은 값으로 평가됩니다(예: <code>5 + 1</code>, 블록 <code>{ }</code>, <code>if</code>). 표현식 끝에 세미콜론을 붙이면 구문이 되어 값이 사라집니다.</p>
+<pre><code class="language-rust">fn main() {
+    let y = {
+        let x = 3;
+        x + 1 // 블록의 값
+    };
+    let z = if y &gt; 3 { "크다" } else { "작다" };
+    println!("y = {}, z = {}", y, z);
+}</code></pre>
+<p>일찍 반환하려면 <code>return</code>을 쓸 수 있습니다. 마지막 줄에 세미콜론을 붙여 <code>a + b;</code>로 쓰면 반환 타입 불일치로 컴파일 에러가 납니다.</p></section>
+<section class="card exercise"><h2>연습 문제</h2>
+<p>1. 섭씨를 화씨로 바꾸는 함수 <code>fn c_to_f(c: f64) -&gt; f64</code>를 만들고 100.0을 넣어 출력해 보세요.</p>
+<p>2. 두 정수 중 큰 값을 반환하는 <code>fn max_of(a: i32, b: i32) -&gt; i32</code>를 <code>if</code> 표현식으로 만들어 보세요.</p>
+<details><summary>힌트</summary><p>반환할 마지막 줄에는 세미콜론을 붙이지 않습니다. 2번은 <code>if a &gt; b { a } else { b }</code>가 함수의 마지막 표현식이 됩니다.</p></details></section>
+<section class="card solution"><h2>어제 문제 풀이</h2><details><summary>풀이 보기</summary>
+<pre><code class="language-rust">fn main() {
+    let c: f64 = 100.0;
+    let f = c * 9.0 / 5.0 + 32.0;
+    println!("{}", f); // 212
+
+    let arr = [3, 8, 1, 9, 4];
+    println!("{}", arr[0] + arr[arr.len() - 1]); // 7
+
+    let person = ("민수", 25);
+    let (name, age) = person;
+    println!("{} {}", name, age);
+}</code></pre></details></section>
+<section class="card"><h2>내일 예고</h2><p>Day 5에서는 if, loop, while, for로 코드의 흐름을 제어하는 방법을 배웁니다.</p></section>
+<nav class="pager"><a href="day-03.html">← Day 3</a><a href="../index.html">전체 목차</a><a href="day-05.html">Day 5 →</a></nav>
+</main><footer>Rust Study · Day 4</footer></body></html>
