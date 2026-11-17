@@ -1,0 +1,91 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 5 · 제어 흐름: if, loop, while, for | Rust 44일 강좌</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll());</script>
+</head><body>
+<header class="hero"><div class="wrap"><span class="badge">🦀 Day 5 / 44 · 1주차</span><h1>제어 흐름: if, loop, while, for</h1><p>예상 학습 시간 20~30분</p>
+<div class="progress"><div style="width:11%"></div></div></div></header>
+<main class="wrap">
+<section class="card goal"><h2>오늘의 목표</h2><ul><li><code>if</code>/<code>else if</code>/<code>else</code>로 조건 분기하기</li><li><code>loop</code>, <code>while</code>, <code>for</code> 반복문의 차이 알기</li><li><code>break</code>, <code>continue</code>, 범위(<code>..</code>)와 반복 중 값 반환 익히기</li></ul></section>
+<section class="card"><h2>개념 설명</h2>
+<p>어제 <code>if</code>가 표현식이라 값을 돌려준다는 걸 봤죠. 오늘은 이를 확장해 프로그램의 흐름을 제어하는 방법을 배웁니다. 조건은 반드시 <code>bool</code>이어야 하며, 숫자를 조건에 바로 쓸 수 없습니다.</p>
+<h3>1. if</h3>
+<pre><code class="language-rust">fn main() {
+    let n = 7;
+    if n % 2 == 0 {
+        println!("짝수");
+    } else if n % 3 == 0 {
+        println!("3의 배수");
+    } else {
+        println!("그 외");
+    }
+
+    let label = if n &gt; 5 { "크다" } else { "작다" };
+    println!("{label}");
+}</code></pre>
+<h3>2. loop와 break 값 반환</h3>
+<p><code>loop</code>는 무한 반복이며 <code>break</code>로 빠져나옵니다. <code>break</code> 뒤에 값을 두면 loop 표현식의 값이 됩니다.</p>
+<pre><code class="language-rust">fn main() {
+    let mut count = 0;
+    let result = loop {
+        count += 1;
+        if count == 10 {
+            break count * 2;
+        }
+    };
+    println!("{result}"); // 20
+}</code></pre>
+<h3>3. while</h3>
+<pre><code class="language-rust">fn main() {
+    let mut n = 3;
+    while n &gt; 0 {
+        println!("{n}...");
+        n -= 1;
+    }
+    println!("발사!");
+}</code></pre>
+<h3>4. for와 범위</h3>
+<p><code>for</code>는 컬렉션이나 범위를 순회할 때 가장 안전하고 많이 쓰입니다. <code>1..4</code>는 1,2,3, <code>1..=4</code>는 4까지 포함합니다.</p>
+<pre><code class="language-rust">fn main() {
+    let a = [10, 20, 30];
+    for x in a {
+        println!("값: {x}");
+    }
+    for i in (1..=3).rev() {
+        println!("카운트: {i}");
+    }
+    for i in 0..10 {
+        if i % 2 == 0 {
+            continue; // 다음 반복으로
+        }
+        if i &gt; 7 {
+            break;
+        }
+        println!("홀수: {i}");
+    }
+}</code></pre>
+</section>
+<section class="card exercise"><h2>연습 문제</h2>
+<p>1. 1부터 100까지의 합을 <code>for</code>로 구해 출력해 보세요.</p>
+<p>2. 1부터 15까지 출력하되 3의 배수는 "Fizz", 5의 배수는 "Buzz", 둘 다면 "FizzBuzz"를 출력하세요.</p>
+<details><summary>힌트</summary><p>1번은 <code>let mut sum = 0;</code>에 <code>1..=100</code>을 더하세요. 2번은 15의 배수(둘 다)를 가장 먼저 검사해야 합니다.</p></details></section>
+<section class="card solution"><h2>어제 문제 풀이</h2><details><summary>풀이 보기</summary>
+<pre><code class="language-rust">fn c_to_f(c: f64) -&gt; f64 {
+    c * 9.0 / 5.0 + 32.0
+}
+
+fn max_of(a: i32, b: i32) -&gt; i32 {
+    if a &gt; b { a } else { b }
+}
+
+fn main() {
+    println!("{}", c_to_f(100.0)); // 212
+    println!("{}", max_of(3, 8));  // 8
+}</code></pre></details></section>
+<section class="card"><h2>내일 예고</h2><p>Day 6에서는 Rust의 가장 독특한 개념인 소유권(Ownership)의 기본과 move를 배웁니다.</p></section>
+<nav class="pager"><a href="day-04.html">← Day 4</a><a href="../index.html">전체 목차</a><a href="day-06.html">Day 6 →</a></nav>
+</main><footer>Rust Study · Day 5</footer></body></html>
