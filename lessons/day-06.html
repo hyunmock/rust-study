@@ -1,0 +1,107 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 6 · 소유권(Ownership) 1: 개념과 move | Rust 44일 강좌</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll());</script>
+</head><body>
+<header class="hero"><div class="wrap"><span class="badge">🦀 Day 6 / 44 · 1주차</span><h1>소유권(Ownership) 1: 개념과 move</h1><p>예상 학습 시간 20~30분</p>
+<div class="progress"><div style="width:14%"></div></div></div></header>
+<main class="wrap">
+<section class="card goal"><h2>오늘의 목표</h2><ul><li>소유권의 세 가지 규칙을 말할 수 있다.</li><li>move(소유권 이동)와 copy의 차이를 이해한다.</li><li>clone으로 데이터를 복제하고, 함수에 값을 넘길 때 소유권이 어떻게 되는지 안다.</li></ul></section>
+<section class="card"><h2>개념 설명</h2>
+<p>Rust는 가비지 컬렉터 없이도 메모리를 안전하게 관리합니다. 비결이 <b>소유권</b>입니다. 규칙은 세 가지입니다.</p>
+<ol><li>모든 값에는 <b>소유자</b>(변수)가 있다.</li><li>소유자는 한 번에 <b>하나뿐</b>이다.</li><li>소유자가 스코프를 벗어나면 값은 <b>버려진다(drop)</b>.</li></ol>
+<h3>1. 스코프와 drop</h3>
+<pre><code class="language-rust">fn main() {
+    {
+        let s = String::from("hello"); // s가 소유자
+        println!("{}", s);
+    } // 여기서 s가 버려지며 메모리 해제
+}</code></pre>
+<h3>2. move</h3>
+<p>String처럼 힙에 데이터를 가진 값을 다른 변수에 대입하면 소유권이 <b>이동</b>합니다. 이전 변수는 더 이상 쓸 수 없습니다(이중 해제를 막기 위해서입니다).</p>
+<pre><code class="language-rust">fn main() {
+    let s1 = String::from("hello");
+    let s2 = s1; // 소유권이 s2로 이동
+    // println!("{}", s1); // 컴파일 에러: borrow of moved value
+    println!("{}", s2);
+}</code></pre>
+<h3>3. clone</h3>
+<p>데이터를 정말 복제하고 싶다면 <code>clone()</code>을 씁니다. 비용이 들 수 있으니 필요할 때만 쓰세요.</p>
+<pre><code class="language-rust">fn main() {
+    let s1 = String::from("hello");
+    let s2 = s1.clone();
+    println!("s1 = {}, s2 = {}", s1, s2);
+}</code></pre>
+<h3>4. Copy 타입</h3>
+<p>정수, 실수, bool, char 같은 단순 값은 스택에만 있어 대입해도 <b>복사</b>되고 원본도 계속 쓸 수 있습니다.</p>
+<pre><code class="language-rust">fn main() {
+    let x = 5;
+    let y = x;
+    println!("x = {}, y = {}", x, y);
+}</code></pre>
+<h3>5. 함수와 소유권</h3>
+<p>함수에 값을 넘기는 것도 대입과 같아서 move 또는 copy가 일어납니다. 반환값으로 소유권을 돌려받을 수도 있습니다.</p>
+<pre><code class="language-rust">fn takes(s: String) {
+    println!("받음: {}", s);
+} // s가 여기서 drop
+
+fn makes_copy(n: i32) {
+    println!("복사됨: {}", n);
+}
+
+fn gives_back(s: String) -&gt; String {
+    s // 소유권을 호출자에게 반환
+}
+
+fn main() {
+    let s = String::from("rust");
+    takes(s);
+    // println!("{}", s); // 에러: s는 이미 move됨
+
+    let n = 7;
+    makes_copy(n);
+    println!("n은 여전히 {}", n);
+
+    let t = String::from("again");
+    let t = gives_back(t);
+    println!("{}", t);
+}</code></pre>
+<p>매번 소유권을 돌려받는 건 번거롭죠? 다음에 배울 <b>참조와 빌림</b>이 이 문제를 해결합니다.</p></section>
+<section class="card exercise"><h2>연습 문제</h2>
+<p>1. 아래 코드는 컴파일되지 않습니다. 이유를 설명하고, clone을 써서 고쳐 보세요.</p>
+<pre><code class="language-rust">fn main() {
+    let a = String::from("rust");
+    let b = a;
+    println!("{} {}", a, b);
+}</code></pre>
+<p>2. 문자열의 길이를 계산해 <code>(String, usize)</code> 튜플로 문자열과 길이를 함께 돌려주는 함수 <code>fn with_len(s: String) -&gt; (String, usize)</code>를 작성하고 호출해 보세요.</p>
+<details><summary>힌트</summary><p>1번은 <code>let b = a.clone();</code>. 2번은 <code>let len = s.len();</code> 후 <code>(s, len)</code>을 반환하세요.</p></details></section>
+<section class="card solution"><h2>어제 문제 풀이</h2><details><summary>풀이 보기</summary>
+<pre><code class="language-rust">fn main() {
+    // 1번
+    let mut sum = 0;
+    for i in 1..=100 {
+        sum += i;
+    }
+    println!("합계: {}", sum); // 5050
+
+    // 2번
+    for i in 1..=15 {
+        if i % 15 == 0 {
+            println!("FizzBuzz");
+        } else if i % 3 == 0 {
+            println!("Fizz");
+        } else if i % 5 == 0 {
+            println!("Buzz");
+        } else {
+            println!("{}", i);
+        }
+    }
+}</code></pre></details></section>
+<section class="card"><h2>내일 예고</h2><p>Day 7은 1주차 복습과 미니 과제, 숫자 맞히기 게임입니다. 지금까지 배운 것을 모두 모아 작은 게임을 만들어 봅니다.</p></section>
+<nav class="pager"><a href="day-05.html">← Day 5</a><a href="../index.html">전체 목차</a><a href="day-07.html">Day 7 →</a></nav>
+</main><footer>Rust Study · Day 6</footer></body></html>
