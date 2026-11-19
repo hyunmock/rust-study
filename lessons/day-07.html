@@ -1,0 +1,81 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 07 · 1주차 복습 + 미니 과제 (숫자 맞히기 게임) | Rust 44일 강좌</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll());</script>
+</head><body>
+<header class="hero"><div class="wrap"><span class="badge">🦀 Day 7 / 44 · 1주차</span><h1>1주차 복습 + 미니 과제 (숫자 맞히기 게임)</h1><p>예상 학습 시간 20~30분</p>
+<div class="progress"><div style="width:16%"></div></div></div></header>
+<main class="wrap">
+<section class="card goal"><h2>오늘의 목표</h2><ul><li>1주차에 배운 변수, 타입, 함수, 제어 흐름, 소유권을 한 번에 복습한다</li><li>입력을 받아 처리하는 작은 게임을 직접 완성한다</li><li><code>match</code>, <code>parse</code>, <code>Result</code>를 처음 맛본다</li></ul></section>
+<section class="card"><h2>개념 설명</h2>
+<p>오늘은 새 개념보다 <b>조합</b>이 중심입니다. 게임에 쓰이는 1주차 내용은 다음과 같습니다.</p>
+<ul><li><b>변수와 mut</b>: <code>let mut input = String::new();</code> 입력을 담을 가변 문자열</li><li><b>타입</b>: <code>u32</code>로 숫자를 명시</li><li><b>함수</b>: <code>secret_number()</code>가 값을 반환 (마지막 표현식)</li><li><b>제어 흐름</b>: <code>for</code>로 횟수 제한, <code>if / else if</code>로 크기 비교</li><li><b>소유권</b>: <code>read_line(&amp;mut input)</code>은 가변 참조를 빌려줍니다 (자세한 내용은 Day 8)</li></ul>
+<p>새로 나오는 것 두 가지: <code>input.trim().parse()</code>는 문자열을 숫자로 바꾸려 시도하고 <code>Ok(값)</code> 또는 <code>Err(오류)</code>를 돌려줍니다. <code>match</code>로 둘을 나눠 처리하면, 잘못된 입력에도 프로그램이 죽지 않습니다. (match는 Day 11에서 자세히 배웁니다.)</p>
+<p><code>cargo new guess_game</code> 후 <code>src/main.rs</code>에 아래 코드를 붙여 넣고 <code>cargo run</code> 하세요. 외부 crate 없이 현재 시각으로 난수를 만들었습니다.</p>
+<pre><code class="language-rust">use std::io;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+// 외부 crate 없이 간단한 난수 만들기: 현재 시각의 나노초를 이용한다
+fn secret_number() -&gt; u32 {
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .subsec_nanos();
+    nanos % 100 + 1 // 1~100
+}
+
+fn main() {
+    let secret = secret_number();
+    let max_tries = 7;
+    println!("1부터 100 사이의 숫자를 맞혀 보세요! (기회 {}번)", max_tries);
+
+    for attempt in 1..=max_tries {
+        println!("[{}번째] 숫자를 입력하세요:", attempt);
+
+        let mut input = String::new();
+        io::stdin().read_line(&amp;mut input).expect("입력 읽기 실패");
+
+        let guess: u32 = match input.trim().parse() {
+            Ok(n) =&gt; n,
+            Err(_) =&gt; {
+                println!("숫자만 입력해 주세요.");
+                continue;
+            }
+        };
+
+        if guess &lt; secret {
+            println!("더 큽니다!");
+        } else if guess &gt; secret {
+            println!("더 작습니다!");
+        } else {
+            println!("🎉 정답! {}번 만에 맞혔어요.", attempt);
+            return;
+        }
+    }
+    println!("아쉽네요. 정답은 {} 였습니다.", secret);
+}
+</code></pre></section>
+<section class="card exercise"><h2>연습 문제 (미니 과제)</h2>
+<p>1. 기회를 7번 대신 5번으로 줄이고, 남은 기회를 매번 출력해 보세요.</p>
+<p>2. 범위를 1~50으로 바꾸고, 정답과의 차이가 5 이하이면 "거의 다 왔어요!"를 추가로 출력해 보세요.</p>
+<details><summary>힌트</summary><p>1번은 <code>max_tries</code> 값과 <code>max_tries - attempt</code>를 쓰세요. 2번은 <code>nanos % 50 + 1</code>, 그리고 차이는 <code>guess.abs_diff(secret) &lt;= 5</code>로 구할 수 있습니다.</p></details></section>
+<section class="card solution"><h2>어제 문제 풀이</h2><details><summary>풀이 보기</summary>
+<pre><code class="language-rust">fn main() {
+    // 1번: 복사(clone)로 해결
+    let a = String::from("rust");
+    let b = a.clone();
+    println!("{} {}", a, b);
+}
+
+// 2번
+fn with_len(s: String) -&gt; (String, usize) {
+    let len = s.len();
+    (s, len)
+}</code></pre><p>1번은 <code>a</code>의 소유권이 <code>b</code>로 move되어 <code>a</code>를 쓸 수 없기 때문에 오류가 납니다. <code>clone()</code>으로 복사하면 둘 다 사용할 수 있습니다. 2번은 호출 예: <code>let (s, n) = with_len(String::from("hi"));</code></p></details></section>
+<section class="card"><h2>내일 예고</h2><p>Day 8은 2주차의 시작, 소유권 2: 참조와 빌림(&amp;, &amp;mut)입니다. 오늘 쓴 <code>&amp;mut input</code>의 정체를 알아봅니다.</p></section>
+<nav class="pager"><a href="day-06.html">← Day 6</a><a href="../index.html">전체 목차</a><a href="day-08.html">Day 8 →</a></nav>
+</main><footer>Rust Study · Day 7</footer></body></html>
