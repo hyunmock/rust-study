@@ -1,0 +1,59 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 8 · 소유권 2: 참조와 빌림(&amp;, &amp;mut) | Rust 44일 강좌</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll());</script>
+</head><body>
+<header class="hero"><div class="wrap"><span class="badge">🦀 Day 8 / 44 · 2주차</span><h1>소유권 2: 참조와 빌림(&amp;, &amp;mut)</h1><p>예상 학습 시간 20~30분</p>
+<div class="progress"><div style="width:18%"></div></div></div></header>
+<main class="wrap">
+<section class="card goal"><h2>오늘의 목표</h2><ul><li>참조(&amp;)로 값을 move 없이 빌려 쓰는 법 익히기</li><li>가변 참조(&amp;mut)로 빌린 값을 수정하기</li><li>빌림 규칙(가변 참조는 한 번에 하나)을 이해하기</li></ul></section>
+<section class="card"><h2>개념 설명</h2>
+<p>Day 6에서 String을 함수에 넘기면 소유권이 move되어 원래 변수를 못 쓴다고 배웠죠. 매번 값을 돌려받는 건 번거롭습니다. 이때 <b>참조</b>를 쓰면 소유권은 그대로 두고 값을 <b>빌려</b> 쓸 수 있습니다.</p>
+<pre><code class="language-rust">fn calculate_length(s: &amp;String) -&gt; usize {
+    s.len()
+} // s는 참조일 뿐이라 여기서 값이 drop되지 않습니다
+
+fn main() {
+    let s1 = String::from("hello");
+    let len = calculate_length(&amp;s1);
+    println!("'{}'의 길이는 {}", s1, len); // s1 계속 사용 가능
+}</code></pre>
+<p>값을 고치려면 <b>가변 참조</b> <code>&amp;mut</code>를 씁니다. 변수도 <code>mut</code>여야 합니다. Day 7의 <code>read_line(&amp;mut input)</code>이 바로 이것입니다.</p>
+<pre><code class="language-rust">fn add_world(s: &amp;mut String) {
+    s.push_str(", world");
+}
+
+fn main() {
+    let mut s = String::from("hello");
+    add_world(&amp;mut s);
+    println!("{}", s); // hello, world
+}</code></pre>
+<p><b>빌림 규칙</b>: 한 시점에 (1) 불변 참조는 여러 개 가능하거나, (2) 가변 참조는 단 하나만 가능합니다. 둘을 섞을 수도 없습니다. 이 규칙이 데이터 레이스를 컴파일 시점에 막아 줍니다.</p>
+<pre><code class="language-rust">fn main() {
+    let mut s = String::from("hi");
+    let r1 = &amp;s;
+    let r2 = &amp;s;          // 불변 참조 여러 개: OK
+    println!("{} {}", r1, r2);
+    let r3 = &amp;mut s;      // r1, r2를 더 이상 안 쓰므로 OK
+    r3.push('!');
+    println!("{}", r3);
+    // let r4 = &amp;mut s; r3와 동시에 쓰면 컴파일 에러!
+}</code></pre>
+<p>또 참조는 항상 유효해야 합니다. 함수 안의 지역 변수에 대한 참조를 반환하는 코드(댕글링 참조)는 컴파일되지 않습니다.</p></section>
+<section class="card exercise"><h2>연습 문제</h2>
+<p>1. <code>fn first_word_len(s: &amp;String) -&gt; usize</code>를 만들어 첫 번째 공백 전까지의 글자 수(바이트)를 반환하고, 호출 뒤에도 원래 문자열을 출력해 보세요.</p>
+<p>2. <code>fn shout(s: &amp;mut String)</code>을 만들어 문자열을 대문자로 바꾸고 끝에 "!"를 붙여 보세요.</p>
+<details><summary>힌트</summary><p>1번은 <code>s.find(' ')</code>가 <code>Option&lt;usize&gt;</code>를 돌려주니 <code>unwrap_or(s.len())</code>을 쓰세요. 2번은 <code>*s = s.to_uppercase();</code> 후 <code>s.push('!')</code>.</p></details></section>
+<section class="card solution"><h2>어제 문제 풀이</h2><details><summary>풀이 보기</summary>
+<p>1번: <code>let max_tries = 5;</code>로 바꾸고 루프 안에서 <code>println!("남은 기회: {}", max_tries - attempt);</code>를 출력합니다.</p>
+<p>2번: 비밀 숫자를 <code>nanos % 50 + 1</code>로 만들고, 추측 비교 뒤에 아래를 추가합니다.</p>
+<pre><code class="language-rust">if guess.abs_diff(secret) &lt;= 5 {
+    println!("거의 다 왔어요!");
+}</code></pre></details></section>
+<section class="card"><h2>내일 예고</h2><p>Day 9는 슬라이스와 String vs &amp;str입니다. 오늘의 참조 개념이 문자열 일부를 빌려 보는 슬라이스로 이어집니다.</p></section>
+<nav class="pager"><a href="day-07.html">← Day 7</a><a href="../index.html">전체 목차</a><a href="day-09.html">Day 9 →</a></nav>
+</main><footer>Rust Study · Day 8</footer></body></html>
